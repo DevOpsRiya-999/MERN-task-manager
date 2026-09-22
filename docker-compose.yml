@@ -2,8 +2,7 @@
 services:
 
   frontend:
-    build:
-      context: ./frontend
+    image: riya9421/mern-task-manager-frontend:latest
     container_name: taskmanager-frontend
     ports:
       - "80:80"
@@ -14,8 +13,7 @@ services:
     restart: unless-stopped
 
   backend:
-    build:
-      context: ./backend
+    image: riya9421/mern-task-manager-backend:latest
     container_name: taskmanager-backend
       
     env_file:
@@ -23,8 +21,10 @@ services:
 
     expose:
       - "5000"
+
     depends_on:
       - mongodb
+
     networks:
       - taskmanager-network
     restart: unless-stopped
@@ -34,8 +34,10 @@ services:
     container_name: taskmanager-mongodb
     volumes:
       - mongodb_data:/data/db
+
     networks:
       - taskmanager-network
+      
     restart: unless-stopped
 
 networks:
