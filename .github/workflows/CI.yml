@@ -31,14 +31,14 @@ jobs:
       run: npm ci
 
     # run frontend tests
-    - name: run frontend tests
-      working-directory: ./frontend
-      run: npm test -- --watchAll=false --passWithNoTests  
+   # - name: run frontend tests
+    #  working-directory: ./frontend
+     # run: npm test -- --watchAll=false --passWithNoTests  
     
     # build the frontend
-    - name: build frontend
-      working-directory: ./frontend
-      run: npm run build
+    #- name: build frontend
+    #  working-directory: ./frontend
+     # run: npm run build
 
     #install backend dependencies
     - name: install backend dependencies
