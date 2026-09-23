@@ -1,0 +1,58 @@
+# goal: create a ci workfolow for a node.js project MARN task manger 
+
+name: MERN Task Manager CI
+
+on:
+  push:
+    
+jobs:
+  ci:
+    name: build and test
+    runs-on: ubuntu-latest
+
+    steps:
+    #checkout the code
+    - name: checkout code
+      uses: actions/checkout@v7
+
+     #set up node.js
+    - name: set up node.js
+      uses: actions/setup-node@v4
+      with:
+         node-version: '20' # Specify your required Node version
+         cache: "npm" # Cache npm dependencies
+         cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+
+    #install  frontend dependencies
+    - name: install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    # run frontend tests
+    - name: run frontend tests
+      working-directory: ./frontend
+      run: npm test -- --watchAll=false --passWithNoTests  
+    
+    # build the frontend
+    - name: build frontend
+      working-directory: ./frontend
+      run: npm run build
+
+    #install backend dependencies
+    - name: install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    #check backend syntax
+    - name: check backend syntax
+      run: node --check backend/app.js   
+
+   #build backend docker image
+    - name: build backend docker image
+      run: docker build -t mern-task-manager-backend:ci ./backend
+   
+   # build frontend docker image
+    - name: build frontend docker image
+      run: docker build -t mern-task-manager-frontend:ci ./frontend
