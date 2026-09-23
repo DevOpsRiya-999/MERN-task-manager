@@ -2,7 +2,7 @@
 
 name: MERN Task Manager CD
 on:
-  push:
+  workflow_dispatch:
 
 jobs:
     deploy:
