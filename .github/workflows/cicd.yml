@@ -1,0 +1,32 @@
+# Goal: create cicd pipeline for task manger app
+
+name: cicd_pipeline
+
+on:
+ push:
+
+
+jobs:
+
+  # =========================
+  # CI
+  # =========================
+  ci:
+   name: Run CI
+   uses: ./.github/workflows/CI.yml
+
+   secrets: inherit
+
+
+    # =========================
+  # CD
+  # =========================
+
+  cd:
+   name: Run CD
+   needs: ci
+
+   uses: ./.github/workflows/CD.yml
+
+   secrets: inherit
+    
