@@ -1,3 +1,4 @@
+# EC2 needs to pull images from Docker Hub.
 
 services:
 

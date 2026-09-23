@@ -6,10 +6,55 @@ on:
 
 jobs:
     deploy:
-        runs-on: self-hosted
-        steps:
-            - name: Code Checkout
-              uses: actions/checkout@v7
+     name: deploy to ec2
+     runs-on: self-hosted
 
-            - name: Run docker container
-              run: docker compose up -d
+     # deploy if only CI passed
+     if: >
+        github.event.name =="workflow_dispatch" &&
+        github.event.workflow_run.conclusion == 'success'
+
+     steps:
+
+       # checkout the code
+       - name: Checkout code
+         uses: actions/checkout@v7
+         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+       # create backend env file
+       - name: create backend environment
+         run: |
+          cat > backend/.env <<EOF
+          MONGODB_URL=${{ secrets.MONGODB_URL }}
+          ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}
+          NODE_ENV=production
+          PORT=5000
+          EOF    
+
+          # 3. Login to Docker Hub
+       - name: Login to Docker Hub
+         uses: docker/login-action@v3
+         with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+          # 4. Pull latest Docker images
+       - name: Pull Docker images
+         run: |
+          docker compose pull
+
+           # 5. Stop old containers
+       - name: Stop old containers
+         run: |
+          docker compose down
+
+ # 6. Start new containers
+       - name: Deploy application
+         run: |
+          docker compose up -d
+
+            # 7. Check deployment
+       - name: Check containers
+         run: |
+          docker compose ps
