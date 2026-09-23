@@ -3,7 +3,7 @@
 name: MERN Task Manager CI
 
 on:
-  push:
+  workflow_dispatch:
     
 jobs:
   ci:
