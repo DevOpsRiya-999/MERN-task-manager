@@ -71,23 +71,23 @@ jobs:
       working-directory: ./backend
       run: |
           docker build \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-backend:latest .
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-backend:latest V1 .
 
   # 10. Build frontend image
     - name: Build frontend Docker image
       working-directory: ./frontend
       run: |
           docker build \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-frontend:latest .
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-frontend:latest V1 .
 
      # 11. Push backend image
     - name: Push backend image
       run: |
           docker push \
-            ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-backend:latest        
+            ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-backend:latest V1       
 
      # 12. Push frontend image
     - name: Push frontend image
       run: |
           docker push \
-            ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-frontend:latest        
+            ${{ secrets.DOCKERHUB_USERNAME }}/mern-task-manager-frontend:latest V1       
