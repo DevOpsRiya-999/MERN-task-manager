@@ -2,13 +2,7 @@
 
 name: MERN Task Manager CD
 on:
-  workflow_run:
-    workflows:
-      - "MERN Task Manager CI"
-    types:
-      - completed
-
-  workflow_dispatch:
+  push:
 
 jobs:
     deploy:
