@@ -1,0 +1,18 @@
+#goal: create a cd workflow for a node.js project MARN task manger
+
+name: MERN Task Manager CD
+on:
+  workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: self-hosted
+        steps:
+            - name: Code Checkout
+              uses: actions/checkout@v7
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Run docker container
+              run: docker compose up -d
