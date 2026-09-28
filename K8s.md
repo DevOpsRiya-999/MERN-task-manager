@@ -5,15 +5,15 @@ This project demonstrates the deployment of a MERN Task Manager application usin
 
 -The application consists of:
 
--Frontend — React
--Backend — Node.js / Express
--Database — MongoDB
--Containerization — Docker
--Orchestration — Kubernetes
--Server — AWS EC2
--Configuration — Kubernetes ConfigMaps / Secrets
--Networking — Kubernetes Services
--Reverse Proxy / Web Server — Nginx
+Frontend — React
+Backend — Node.js / Express
+Database — MongoDB
+Containerization — Docker
+Orchestration — Kubernetes
+Server — AWS EC2
+Configuration — Kubernetes ConfigMaps / Secrets
+Networking — Kubernetes Services
+Reverse Proxy / Web Server — Nginx
 =================================================================================================================
 # 🏗️ Architecture
 
