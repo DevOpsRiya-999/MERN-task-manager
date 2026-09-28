@@ -14,8 +14,10 @@ Server — AWS EC2
 Configuration — Kubernetes ConfigMaps / Secrets
 Networking — Kubernetes Services
 Reverse Proxy / Web Server — Nginx
+
 =================================================================================================================
 # 🏗️ Architecture
+
 
                          👤 USER
                            |
@@ -55,9 +57,11 @@ Reverse Proxy / Web Server — Nginx
 
                     Kubernetes Namespace
                        task-manager-ns
+                       
 ====================================================================================
 
 # 🔐 Configuration
+
 ConfigMap
    │
    ├── API URL
@@ -71,6 +75,7 @@ Secret
    └── Sensitive configuration
 
 ====================================================================================
+
 # 🌐 Application Access
 ``` bash 
 kubectl get svc -n task-manager-ns
@@ -95,8 +100,10 @@ Backend Pod
     │
     ▼
 MongoDB
+
    
 =========================================================================================
+
 # 📁 Kubernetes Project Structure
 MERN-task-manager/
 │
@@ -121,6 +128,7 @@ MERN-task-manager/
 │
 ├── docker-compose.yml
 └── README.md
+
 ===================================================================================================
 # ⭐ Project Summary
 Successfully deployed a containerized MERN Task Manager application on AWS EC2 using Kubernetes. The project includes separate frontend, backend, and MongoDB components,
