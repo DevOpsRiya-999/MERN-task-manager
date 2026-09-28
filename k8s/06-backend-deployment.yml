@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: task-manager-ns
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+      containers:
+        - name: backend
+
+          image: riya9421/mern-task-manager-backend:latest
+
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 5000
+
+          env:
+            - name: PORT
+              value: "5000"
+
+            - name: NODE_ENV
+              value: "production"
+
+            - name: MONGODB_URL
+              value: "mongodb://mongodb:27017/taskmanager"
+
+            - name: ACCESS_TOKEN_SECRET
+              value: "Rj2S?RVe9[]8-dCS6A**&b5Tsg$gwbg~Bd{*QTK"

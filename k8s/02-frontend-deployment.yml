@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-manager
+  labels:
+    app: task-manager-fe
+  namespace: task-manager-ns
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: task-manager-fe
+
+  template:
+    metadata:
+      labels:
+        app: task-manager-fe
+
+    spec:
+      containers:
+      - name: mern-task-manager-frontend 
+
+        image: riya9421/mern-task-manager-frontend
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 80
+
+        resources:
+          requests: # minimum resource requirement
+            cpu: 10m # 0.01 Cores of CPU
+            memory: 64Mi # 67 Mb of RAM
+          
+          limits: # maximum resource requirement
+            cpu: 250m # 0.25 Cores of CPU
+            memory: 128Mi
+
+
