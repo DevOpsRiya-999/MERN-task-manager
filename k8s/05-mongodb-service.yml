@@ -5,11 +5,13 @@ metadata:
   namespace: task-manager-ns
 
 spec:
+  clusterIP: None
   selector:
     app: mongodb
 
   ports:
-    - port: 27017
+    - protocol: TCP
+      port: 27017
       targetPort: 27017
 
-  type: ClusterIP
+
