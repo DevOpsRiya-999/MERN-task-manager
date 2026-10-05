@@ -28,14 +28,28 @@ spec:
             - containerPort: 5000
 
           env:
-            - name: PORT
-              value: "5000"
+           - name: PORT
+             valueFrom:
+              configMapKeyRef:
+                name: task-manager-configmap
+                key: PORT
 
-            - name: NODE_ENV
-              value: "production"
+           - name: NODE_ENV
+             valueFrom:
+              configMapKeyRef:
+                name: task-manager-configmap
+                key: NODE_ENV
 
-            - name: MONGODB_URL
-              value: "mongodb://mongodb:27017/taskmanager"
+           - name: MONGODB_URL
+             valueFrom:
+              configMapKeyRef:
+                name: task-manager-configmap
+                key: MONGODB_URL
 
-            - name: ACCESS_TOKEN_SECRET
-              value: "Rj2S?RVe9[]8-dCS6A**&b5Tsg$gwbg~Bd{*QTK"
+           - name: ACCESS_TOKEN_SECRET
+             valueFrom:
+              secretKeyRef:
+                name: task-manager-secrets
+                key: ACCESS_TOKEN_SECRET
+
+
