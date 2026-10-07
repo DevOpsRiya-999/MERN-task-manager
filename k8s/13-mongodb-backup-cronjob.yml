@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+  namespace: task-manager-ns
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+
+          containers:
+            - name: mongodb-backup
+              image: mongo:7
+              imagePullPolicy: IfNotPresent
+
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  BACKUP_DIR="/backup/$(date +%Y-%m-%d_%H-%M-%S)"
+                  mkdir -p "$BACKUP_DIR"
+
+                  mongodump        --uri="mongodb://mongodb:27017/taskmanager"           --out="$BACKUP_DIR"
+
+                  find /backup -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} +
+
+                  echo "MongoDB backup completed: $BACKUP_DIR"
+
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 250m
+                  memory: 256Mi
+
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: mongodb-backup-pvc
+
