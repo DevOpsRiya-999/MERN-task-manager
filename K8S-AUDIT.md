@@ -101,22 +101,22 @@ http://<EC2-PUBLIC-IP>:3000
 
 | Concept | Status (✅ / ⚠️ / ❌) | Evidence | Why I used it in my app | Where to look |
 |---|---|---|---|---|
-| Deployment + ReplicaSet | ✅ | `./audit.sh` → 4 deployments | Manages application Pods and maintains replicas | `nginx Deployment, ReplicaSet` |
-| Service | ✅ | `./audit.sh` → 6 services | Provides stable networking between application components | `nginx Service` |
+| Deployment + ReplicaSet | ✅ | `./k8s/02-frontend-deployment.yml` → 4 deployments | Manages application Pods and maintains replicas | `nginx Deployment, ReplicaSet` |
+| Service | ✅ | ` /k8s/03-frontend-service.yml` → 6 services | Provides stable networking between application components | `nginx Service` |
 | Namespace | ✅ | `/01-namespace.yml` → 3 namespaces | Keeps application resources isolated and organized ,if we don't use separated Ns then whole project will work in default Ns| `namespace manifest, k8s docs` |
-| Labels and selectors | ✅ | `./audit.sh` → 6 services have endpoints | Connects Services to the correct Pods | `k8s/` |
-| Rolling update + rollback | ⚠️ | `./audit.sh` → 1 deployment rolled to a new image; rollback not visible | Allows application updates with minimal downtime | `k8s/` |
-| ConfigMap | ✅ | `./audit.sh` → 3 ConfigMaps | Stores non-sensitive application configuration | `k8s/` |
-| Secret | ✅ | `./audit.sh` → 2 Opaque Secrets | Stores sensitive configuration such as credentials | `k8s/` |
-| Requests and limits | ❌ | `./audit.sh` → 6 of 8 containers have CPU and memory requests/limits | Prevents containers from consuming excessive cluster resources | `k8s/` |
-| Probes (liveness + readiness) | ⚠️ | `./audit.sh` → 3 of 8 containers have both probes | Helps Kubernetes detect unhealthy Pods and send traffic only to ready Pods | `k8s/` |
-| PVC | ✅ | `./audit.sh` → 3 bound PVCs | Provides persistent storage for application data | `k8s/` |
+| Labels and selectors | ✅ | `/k8s/03-frontend-service.yml` → 6 services have endpoints | Connects Services to the correct Pods | commands: namespaces, labels, selectors, k8s docs |
+| Rolling update + rollback | ✅ | `./audit.sh` → 1 deployment rolled to a new image; rollback not visible | Allows application updates with minimal downtime | rolling update (rollback is not covered there, see k8s docs)` |
+| ConfigMap | ✅ | `/k8s/10-configmap.yml` → 3 ConfigMaps | Stores non-sensitive application configuration | `MONGODB ConfigMap` |
+| Secret | ✅ | `/k8s/09-secrets.yml` → 2 Opaque Secrets | Stores sensitive configuration such as credentials | `MONGODB Secret` |
+| Requests and limits | ✅ | `k8s/02-frontend-deployment.yml` → 6 of 8 containers have CPU and memory requests/limits | Prevents containers from consuming excessive cluster resources | `Deployment with resources, k8s docs` |
+| Probes (liveness + readiness) |✅ |  `k8s/02-frontend-deployment.yml` → 3 of 8 containers have both probes | Helps Kubernetes detect unhealthy Pods and send traffic only to ready Pods | `k8s docs, liveness example` |
+| PVC | ✅ | `/k8s/08-mongodb-pv.yml` → 3 bound PVCs | Provides persistent storage for application data |PVC, MySQL volumes (kind creates the volume for you, see kind/README.md) |
 | Ingress | ❌ | `./audit.sh` → 0 ingress resources and 0 controllers | Not implemented; frontend is accessed using Service port-forwarding | `k8s/` |
-| Multi-node kind cluster | ✅ | `./audit.sh` → 3 nodes | Provides a multi-node Kubernetes environment for testing | `kind/kind-config.yaml` |
-| HPA (stretch) | ✅ | `./audit.sh` → 2 HPAs | Automatically scales application replicas based on resource usage | `k8s/` |
+| Multi-node kind cluster | ✅ |kind-config.yaml. kubectl get nodes shows 3 nodes. The vote pods ran on two different workers. → 3 nodes | Provides a multi-node Kubernetes environment for testing | `kind/kind-config.yaml` |
+| HPA (stretch) | ✅ | `/k8s/14-backend-hpa.yml` → 2 HPAs | Automatically scales application replicas based on resource usage | `k8s/` |
 | RBAC + ServiceAccount (stretch) | ❌ | `./audit.sh` → 0 roles/rolebindings and 0 custom ServiceAccounts | Not implemented in the current project | `k8s/` |
-| CronJob (stretch) | ✅ | `./audit.sh` → 1 CronJob | Runs scheduled background tasks automatically | `k8s/` |
-| GitHub Actions deploying to kind (stretch) | ❌ | `./audit.sh` → no kind workflow detected | CI/CD deployment to kind is not implemented | `.github/workflows/` |
+| CronJob (stretch) | ✅ | `/k8s/13-mongodb-backup-cronjob.yml` → 1 CronJob | Runs scheduled background tasks automatically | `CronJob manifest, k8s docs/` |
+| GitHub Actions deploying to kind (stretch) | ⚠️ | `/.github/workflows` → no kind workflow detected | CI/CD deployment to kind is not implemented  BUT I want every pull request to prove the manifests work on a clean 3-node cluster.| (helm/kind-action, example workflow) |
 
 ----------------------------------------------
 
