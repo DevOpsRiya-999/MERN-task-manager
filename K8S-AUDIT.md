@@ -89,7 +89,7 @@ kubectl port-forward svc/frontend 8081:80 -n task-manager-ns --address 0.0.0.0
 ```
 * Then open:
 ```bash
-http://<EC2-PUBLIC-IP>:3000
+http://<EC2-PUBLIC-IP>:8081
 
 ```
 * Make sure port 8081 is allowed in the EC2 Security Group.
