@@ -95,7 +95,6 @@ http://<EC2-PUBLIC-IP>:3000
 * Make sure port 8081 is allowed in the EC2 Security Group.
 
 -------------------------------
-# Audit
 
 ## Audit
 
@@ -106,8 +105,8 @@ http://<EC2-PUBLIC-IP>:3000
 | Namespace | ✅ | `/01-namespace.yml` → 3 namespaces | Keeps application resources isolated and organized ,if we don't use separated Ns then whole project will work in default Ns| `namespace manifest, k8s docs` |
 | Labels and selectors | ✅ | `/k8s/03-frontend-service.yml` → 6 services have endpoints | Connects Services to the correct Pods | commands: namespaces, labels, selectors, k8s docs |
 | Rolling update + rollback | ✅ | `./audit.sh` → 1 deployment rolled to a new image; rollback not visible | Allows application updates with minimal downtime | rolling update (rollback is not covered there, see k8s docs)` |
-| ConfigMap | ✅ | `/k8s/10-configmap.yml` → 3 ConfigMaps | Stores non-sensitive application configuration | <MONGODB ConfigMap> |
-| Secret | ✅ | `/k8s/09-secrets.yml` → 2 Opaque Secrets | Stores sensitive configuration such as credentials | < MONGODB Secret> |
+| ConfigMap | ✅ | `/k8s/10-configmap.yml` → 3 ConfigMaps | Stores non-sensitive application configuration | `MONGODB ConfigMap` |
+| Secret | ✅ | `/k8s/09-secrets.yml` → 2 Opaque Secrets | Stores sensitive configuration such as credentials |  `MONGODB Secret` |
 | Requests and limits | ✅ | `k8s/02-frontend-deployment.yml` → 6 of 8 containers have CPU and memory requests/limits | Prevents containers from consuming excessive cluster resources | `Deployment with resources, k8s docs` |
 | Probes (liveness + readiness) |✅ |  `k8s/02-frontend-deployment.yml` → 3 of 8 containers have both probes | Helps Kubernetes detect unhealthy Pods and send traffic only to ready Pods | `k8s docs, liveness example` |
 | PVC | ✅ | `/k8s/08-mongodb-pv.yml` → 3 bound PVCs | Provides persistent storage for application data |PVC, MySQL volumes (kind creates the volume for you, see kind/README.md) |
@@ -116,7 +115,7 @@ http://<EC2-PUBLIC-IP>:3000
 | HPA (stretch) | ✅ | `/k8s/14-backend-hpa.yml` → 2 HPAs | Automatically scales application replicas based on resource usage | `k8s/` |
 | RBAC + ServiceAccount (stretch) | ❌ | `./audit.sh` → 0 roles/rolebindings and 0 custom ServiceAccounts | Not implemented in the current project | `k8s/` |
 | CronJob (stretch) | ✅ | `/k8s/13-mongodb-backup-cronjob.yml` → 1 CronJob | Runs scheduled background tasks automatically | `CronJob manifest, k8s docs/` |
-| GitHub Actions deploying to kind (stretch) | ⚠️ | `/.github/workflows` → no kind workflow detected | CI/CD deployment to kind is not implemented  BUT I want every pull request to prove the manifests work on a clean 3-node cluster.| (helm/kind-action, example workflow) |
+| GitHub Actions deploying to kind (stretch) | ⚠️ | `/.github/workflows` → no kind workflow detected | CI/CD deployment to kind is not implemented  BUT I want every pull request to prove the manifests work on a clean 3-node cluster.| `(helm/kind-action, example workflow)` |
 
 ----------------------------------------------
 
@@ -132,6 +131,7 @@ mongodb-kfxlh            IPv4          27017   10.244.1.2              5d23h
 ubuntu@ip-172-31-24-151:~$
 ```
 -------------------
+* Rolling update and rollback:
 ```bash
 ubuntu@ip-172-31-24-151:~$ kubectl rollout history deployment/backend
 deployment.apps/backend
@@ -160,6 +160,7 @@ task-manager-6f4947d67f   0         0         0       10d
 task-manager-7669c5f96d   0         0         0       10d
 task-manager-845b68f666   1         1         1       22h
 ```
+------------------------------------
 * PVC keeps data even after delete the pods
 ```bash
 ubuntu@ip-172-31-24-151:~$ kubectl get pvc
@@ -168,6 +169,7 @@ mongodb-backup-pvc       Bound    mongodb-backup-pv   2Gi        RWO            
 mongodb-data-mongodb-0   Bound    mongodb-pv          1Gi        RWO            manual          <unset>                 5d22h
 ubuntu@ip-172-31-24-151:~$
 ```
+--------------------------------------
 CronJob 
 ```bash
 ubuntu@ip-172-31-24-151:~/MERN-task-manager/MERN-task-manager$ kubectl logs -n task-manager-ns job/mongodb-backup-29857080
@@ -178,6 +180,7 @@ ubuntu@ip-172-31-24-151:~/MERN-task-manager/MERN-task-manager$ kubectl logs -n t
 MongoDB backup completed: /backup/2026-10-08_17-16-16
 ubuntu@ip-172-31-24-151:~/MERN-task-manager/MERN-task-manager$
 ```
+------------------------------------------------
 The audit script, run on the finished app with the workflow folder passed in:
 ```bash
 ubuntu@ip-172-31-24-151:~/MERN-task-manager/MERN-task-manager$ ./audit.sh
@@ -204,6 +207,30 @@ context: kind-devboard   scope: all non-system namespaces
    The app is not fully working, so the ✅ above only show that objects exist. Fix the pods first.
 Seen: 12/16  (must 10/12, stretch 2/4). Pass mark is 10+. Now write the evidence in K8S-AUDIT.md.
 ```
+----------------------------------------
+## What was hard / what I would change
+The most challenging part was making the application production-ready on Kubernetes. I faced issues with:
+* Understanding the difference between a container being alive and being ready to receive traffic.
+* Setting up HPA and troubleshooting the Metrics Server because kubectl top nodes initially returned Metrics API not available.
+* Managing MongoDB StatefulSet, PVC, and persistent storage.
+* Creating a CronJob for MongoDB backups and verifying that the backup job runs successfully.
+## what I would change 
+* If I were improving this project further, I would:
+* Use Ingress with HTTPS instead of relying on port-forwarding for frontend access.
 
+* Use AWS Load Balancer for production traffic.
 
+* Store MongoDB backups in Amazon S3 instead of local hostPath storage.
+
+* Use AWS managed MongoDB/DocumentDB or MongoDB Atlas instead of running MongoDB directly inside the Kubernetes cluster.
+
+* Add Prometheus and Grafana for monitoring and dashboards.
+
+* Add centralized logging and alerting.
+
+* Use Helm to manage Kubernetes manifests more easily.
+
+* Add a complete CI/CD pipeline so deployments happen automatically after code changes.
+
+* Use separate configurations for development, staging, and production.
 
